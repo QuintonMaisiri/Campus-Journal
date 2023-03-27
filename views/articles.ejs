@@ -1,0 +1,25 @@
+<%- include('partials/header'); %>
+<%- include('partials/nav'); %>
+
+
+<body id="articles">
+    <h1 class="white"><%= journalName %> </h1>
+
+    <div class="articles">
+
+        <div class="grid">
+            <% foundArticles.forEach((article)=>{ %>
+                <div class="card" style="width: 20rem;">
+                    <img src="/images/science.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= article.name %></h5>
+                      <p class="card-text"><%= article.content.substring(0,100) + "..."%></p>
+                      <a href= <%= "/article/" + article.id %> class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            <% } ) %>
+
+    </div>
+   
+    </div>
+</body>

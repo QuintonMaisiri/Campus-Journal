@@ -1,0 +1,21 @@
+.article-body{
+    background-color: white;
+}
+.content {
+    padding: 40px;
+}
+
+/* #articles>.container{
+    display: flex;
+} */
+.grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 10px;
+    row-gap: 10px;
+}
+.articles{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}

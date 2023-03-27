@@ -1,0 +1,35 @@
+.compose-setup-container{
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    width: 35vw;
+    height: 80vh;
+    border-radius: 2%;
+    margin: 30px auto;
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.compose-body{
+    background-color: whitesmoke;
+}
+.compose-container{
+    margin: 0 auto;
+    width: 70vw;
+}
+.controls{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.controls > div{
+    margin: 0 5px;
+}
+#editorjs{
+    background-color: rgb(254, 254, 254);
+    width: 80vw;
+    margin-left: auto;
+    margin-right: auto;
+}

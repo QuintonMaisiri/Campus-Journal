@@ -1,0 +1,27 @@
+.row{
+    height: 25vh;
+}
+
+.journal-item{
+    background-position: center;
+    background-size: cover;
+    padding: 0px;
+    position: relative;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: 300ms ease-in-out;
+}
+.journal-item:hover{
+    transform: scale(0.9);
+}
+.row-2{
+    height: 50vh;
+}
+
+.white{
+    position: relative;
+    color: white;
+    z-index: 10;
+}

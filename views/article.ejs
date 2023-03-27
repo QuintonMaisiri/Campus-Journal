@@ -1,0 +1,13 @@
+<%- include('partials/header'); %>
+<%- include('partials/nav'); %>
+
+<body class="article-body">
+    <div class="header" style="background-image:url('/images/law.jpg');">
+        <div class="overlay"></div>
+        <h1 class="white"> <%= article.name %></h1>
+    </div>
+
+    <div class="content">
+        <p> <%= article.content %> </p>
+    </div>
+</body>

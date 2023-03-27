@@ -1,0 +1,38 @@
+<%- include('partials/header'); %>
+
+<body>
+    <div class="login-container">
+        <div class="left">
+            <h1 class="login-heading">Welcome To Campus Journal</h1>
+            <p class="login-subtext">Enter Your Details To Start Reading And Composing</p>
+
+            <form action="/register" method="post">
+
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping"><i class="bi bi-person-fill"></i></span>
+                    <input type="text" name="fullname" class="form-control" placeholder="Full name" aria-label="Full name"
+                        aria-describedby="addon-wrapping">
+                </div>
+
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping"><i class="bi bi-envelope-at-fill"></i></span>
+                    <input type="email" name = "email" class="form-control" placeholder="Email" aria-label="Email"
+                        aria-describedby="addon-wrapping">
+                </div>
+
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping"><i class="bi bi-key-fill"></i></span>
+                    <input type="password" name ="password" class="form-control" placeholder="Password" aria-label="Password"
+                        aria-describedby="addon-wrapping">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">Register</button>
+            </form>
+
+            <p class="login-subtext">Join Our university community of writers and readers Contribute to the ever-growing library of knowledge
+            </p>
+        </div>
+        <div class="right"><div class="overlay"></div></div>
+    </div>
+</body>
+
+</html>

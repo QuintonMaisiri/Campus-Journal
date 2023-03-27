@@ -1,0 +1,33 @@
+<%- include('partials/header'); %>
+<%- include('partials/nav'); %>
+
+<body>
+    <div class="compose-setup-container">
+        <h2>Compose</h2>
+        <p>Create an article</p>
+        <form action="/compose" method="post">
+
+            <div>
+                <select class="form-select" aria-label="Default select example" name="journal">
+                    <option selected disabled>Select Journal Type</option>
+                    <option value="Science">Science</option>
+                    <option value="Computing">Computing</option>
+                    <option value="Art">Art</option>
+                    <option value="Law">Law</option>
+                    <option value="Music">Music</option>
+                  </select>
+            </div>
+
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping"><i class="bi bi-journal"></i></span>
+                <input type="text" name = "articleName" class="form-control" placeholder="Article name" aria-label="Article"
+                    aria-describedby="addon-wrapping">
+            </div>
+        
+                <button type="submit" class="btn btn-primary btn-lg">Next</button>
+        
+        </form>
+    </div>
+</body>
+
+<%- include('partials/footer'); %>
