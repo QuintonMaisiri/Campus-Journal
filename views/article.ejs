@@ -8,6 +8,9 @@
     </div>
 
     <div class="content">
-        <p> <%= article.content %> </p>
+
+        <% article.content.blocks.forEach(function (block){ %>
+            <p> <%- block.data.text %> </p>
+        <% }) %>
     </div>
 </body>
