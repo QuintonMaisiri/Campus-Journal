@@ -20,12 +20,17 @@
     flex-direction: column;
 }
 .article{
-    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
     padding: 20px;
 }
 .user{
     color:gray;
-    font-size: 12pt;
+    font-size: 10pt;
+}
+
+.date{
+    color:gray;
+    font-size: 8pt;
 }
 
 .comments-container{
@@ -34,7 +39,13 @@
 }
 
 .comment{
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    font-size: 9pt;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
     margin-bottom: 20px;
-    padding: 20px;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+.comment-form{
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    padding: 10px 20px;
 }
