@@ -9,8 +9,20 @@
 
     <div class="content">
 
+      <div class="article">
         <% article.content.blocks.forEach(function (block){ %>
             <p> <%- block.data.text %> </p>
         <% }) %>
+      </div>
+
+      <div class="comments-container">
+            <div class="comment">
+                <p class="user">Quinton Maisiri</p>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Inventore temporibus cupiditate deleniti accusamus fugit suscipit quod! Eum officia deserunt veniam.</p>
+                <p class="date">28/03/2022</p>
+            </div>
+      </div>
+
+
     </div>
 </body>
