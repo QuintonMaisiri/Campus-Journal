@@ -118,10 +118,8 @@ app.post('/register', function(req, res) {
 app.get("/articles/:journal", (req, res) => {
 
     const journal =  _.capitalize(req.params.journal);
-    console.log(journal);
 
     Article.find({Journal : journal}).then((foundArticles) => {
-        console.log(foundArticles);
         res.render("articles", {foundArticles,journalName : journal})
     })
 
@@ -148,24 +146,27 @@ app.post("/compose", (req, res) => {
 
 app.post("/comment",(req ,res) =>{
 
-    const article = new Article();
-    const user = new User();
+    // const article = new Article();
+    // const user = new User();
 
-    User.findOne({username:req.username}).then((foundUser)=>{
-        user = foundUser;
-    })
+    // User.findOne({username:req.username}).then((foundUser)=>{
+    //     user = foundUser;
+    // })
 
-    Article.findOne({_id:req.id}).then((foundArticle)=>{
-        article = foundArticle;
-    });
+    // Article.findOne({_id:req.articleID}).then((foundArticle)=>{
+    //     article = foundArticle;
+    // });
 
-    const comment = new Comment({
-        user : user ,
-        comment : req.comment,
-        article : article
-    })
+    // const comment = new Comment({
+    //     user : user ,
+    //     comment : req.comment,
+    //     article : article
+    // })
 
-    comment.save();
+    // comment.save();
+
+    console.log(req.body)
+
     res.send("200");
 
 })
