@@ -26,10 +26,12 @@ document.getElementById("submit").addEventListener("click",()=>{
     editor.save().then((articleData)=>{
         fetch("/savepost", {
             method: "POST",
+            redirect: "follow",
             body: JSON.stringify({
                 articleContent : articleData,
                 articleName : articleName,
                 journalName : journalName
+
             }),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"

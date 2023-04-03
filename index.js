@@ -4,12 +4,13 @@ const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const session = require("express-session");
 const mongoose = require("mongoose");
+const formidable = require("formidable")
 const _ =require("lodash")
 
 const app = express();
 const PORT = 3360;
 
-mongoose.connect("mongodb://127.0.0.1:27017/campusJournal",);
+mongoose.connect("mongodb://127.0.0.1:27017/campusJournal");
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,7 +32,8 @@ app.use(passport.session())
 const articleSchema = {
     name: String,
     content: Object,
-    Journal: String
+    Journal: String,
+    image: String
 };
 
 const Article = new mongoose.model("article", articleSchema);
@@ -167,14 +169,35 @@ app.get("/comments/:articleID",(req,res)=>{
     })
 })
 
+app.post("/image/:id",(req,res)=>{
+    form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+        const oldpath = files.filetoupload.filepath;
+        const newpath = __dirname + "/public/images/" + files.filetoupload.originalFilename;
+        fs.rename(oldpath, newpath, function (err) {
+          if (err){
+            res.send("err");
+          }else{
+            Article.findByIdAndUpdate(req.params.id,{image: files.filetoupload.originalFilename }).then((err,docs)=>{
+                if(err){
+                    console.log(err)
+                }else{
+                    res.redirect(`article/${req.params.id}`)
+                }
+            })         
+          }
+        })
+    })
+});
+
 app.post("/savepost", (req, res) => {
     const article = new Article({
         name: _.capitalize(req.body.articleName),
         content: (req.body.articleContent),
-        Journal: _.capitalize(req.body.journalName)
+        Journal: _.capitalize(req.body.journalName),
     })
     article.save();
-    res.redirect("/journals");
+    res.render("add_image");
 })
 
 app.listen(PORT, () => {

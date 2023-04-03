@@ -21,9 +21,11 @@ h1{
 }
 .header{
     position: relative;
-    height: 40vh;
+    height: 60vh;
     background-position: center;
-    background-size: cover
+    background-size: cover;
+    padding-top: 60px;
+    z-index: 2;
 }
 a{
     text-decoration: none;

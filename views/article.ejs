@@ -2,8 +2,13 @@
 <%- include('partials/nav'); %>
 
 <body class="article-body">
-    <div class="header" style="background-image:url('/images/law.jpg');">
-        <div class="overlay"></div>
+    <div class="header" style=
+    <% if(article.image){ %>
+        <%= `background-image:url('/images/${article.image}')` %> >
+    <% }else{ %>
+        <%= `background-image:url('/images/article_bg.jpg')` %> >
+    <% } %>
+        <!-- <div class="overlay"></div> -->
         <h1 class="white"> <%= article.name %></h1>
     </div>
 
@@ -13,7 +18,7 @@
         <% article.content.blocks.forEach(function (block){ %>
             <p> <%- block.data.text %> </p>
         <% }) %>
-        <input type="hidden" id="articleID" value= <%= article._id %>>
+        <input type="hidden" id="articleID" value= <%= article._id %> >
       </div>
 
       <div class="comments-container">
