@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const _ =require("lodash")
 
 const app = express();
-const PORT = 3306;
+const PORT = 3360;
 
 mongoose.connect("mongodb://127.0.0.1:27017/campusJournal",);
 
@@ -47,13 +47,13 @@ userSchema.plugin(passportLocalMongoose);
 
 const User = new mongoose.model("user", userSchema);
 
-// const commentSchema = new mongoose.Schema({
-//     user : User,
-//     comment : String,
-//     article : Article,
-// });
+const commentSchema = new mongoose.Schema({
+    user : String,
+    comment : String,
+    article : String,
+});
 
-// const Comment = new mongoose.model("comment",commentSchema);
+const Comment = new mongoose.model("comment",commentSchema);
 
 
 passport.use(User.createStrategy());
@@ -90,29 +90,29 @@ app.get("/register", (req, res) => {
     res.render("register")
 })
 
-app.post('/register', function(req, res) {
-    // User.register(new User({ username : req.body.email , fullname : req.body.fullname }), req.body.password, function(err,user) {
-    //     if (err) {
-    //         return res.redirect("/register");
-    //     }
-    //     });
-        passport.authenticate("local")(req,res,()=>{
-        res.redirect('/journals');
-    });
-  });
+// app.post('/register', function(req, res) {
+//     // User.register(new User({ username : req.body.email , fullname : req.body.fullname }), req.body.password, function(err,user) {
+//     //     if (err) {
+//     //         return res.redirect("/register");
+//     //     }
+//     //     });
+//         passport.authenticate("local")(req,res,()=>{
+//         res.redirect('/journals');
+//     });
+//   });
 
 
-// app.post("/register", (req, res) => {
+app.post("/register", (req, res) => {
 
-//     const user = new User({
-//         email: req.body.email,
-//         fullname: req.body.fullname,
-//         password: req.body.password
-//     })
-//     user.save();
-//     res.redirect("/journals");
+    const user = new User({
+        email: req.body.email,
+        fullname: req.body.fullname,
+        password: req.body.password
+    })
+    user.save();
+    res.redirect("/journals");
 
-// })
+})
 
 
 app.get("/articles/:journal", (req, res) => {
@@ -144,31 +144,27 @@ app.post("/compose", (req, res) => {
     res.render("compose", { title: req.body.articleName, journal: req.body.journal })
 });
 
-app.post("/comment",(req ,res) =>{
+app.post("/comments",(req ,res) =>{
 
-    // const article = new Article();
-    // const user = new User();
-
-    // User.findOne({username:req.username}).then((foundUser)=>{
-    //     user = foundUser;
-    // })
-
-    // Article.findOne({_id:req.articleID}).then((foundArticle)=>{
-    //     article = foundArticle;
-    // });
-
-    // const comment = new Comment({
-    //     user : user ,
-    //     comment : req.comment,
-    //     article : article
-    // })
-
-    // comment.save();
-
-    console.log(req.body)
+    User.findOne({email:"quinton@gmail.com"}).then((foundUser)=>{
+        const comment = new Comment({
+            user : foundUser._id ,
+            comment : req.body.comment,
+            article : req.body.articleID
+        })
+    
+        comment.save();
+        
+    })
 
     res.send("200");
 
+});
+
+app.get("/comments/:articleID",(req,res)=>{
+    Comment.find({article: req.params.articleID}).then((foundComments)=>{
+        res.send(foundComments);
+    })
 })
 
 app.post("/savepost", (req, res) => {
@@ -182,5 +178,5 @@ app.post("/savepost", (req, res) => {
 })
 
 app.listen(PORT, () => {
-    console.log("Server successfully running on port 3306!")
+    console.log("Server successfully running on port 3360!")
 });
