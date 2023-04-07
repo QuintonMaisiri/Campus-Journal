@@ -4,8 +4,11 @@ const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const session = require("express-session");
 const mongoose = require("mongoose");
-const formidable = require("formidable")
-const _ =require("lodash")
+const formidable = require("formidable");
+const _ = require("lodash");
+const fs = require("fs");
+const nodemailer = require("nodemailer");
+const badWordChecker = require("badwords-js-from-csv");
 
 const app = express();
 const PORT = 3360;
@@ -14,22 +17,20 @@ mongoose.connect("mongodb://127.0.0.1:27017/campusJournal");
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({type: ['application/json', 'text/plain']}))
+app.use(bodyParser.json({ type: ['application/json', 'text/plain'] }))
 app.set("view engine", "ejs");
 app.use("/", express.static(__dirname + '/public'));
 
 app.use(session(
     {
         secret: "MyLittleSecret1231234249872492982389478926",
-        saveUninitialized : false,
+        saveUninitialized: false,
         resave: false
     }
 ));
 
-app.use(passport.initialize());
-app.use(passport.session())
-
 const articleSchema = {
+    author: String,
     name: String,
     content: Object,
     Journal: String,
@@ -45,23 +46,16 @@ const userSchema = new mongoose.Schema({
     password: String
 });
 
-userSchema.plugin(passportLocalMongoose);
 
 const User = new mongoose.model("user", userSchema);
 
 const commentSchema = new mongoose.Schema({
-    user : String,
-    comment : String,
-    article : String,
+    user: String,
+    comment: String,
+    article: String,
 });
 
-const Comment = new mongoose.model("comment",commentSchema);
-
-
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
+const Comment = new mongoose.model("comment", commentSchema);
 
 app.get("/", (req, res) => {
     res.render("login")
@@ -71,12 +65,11 @@ app.post("/login", (req, res) => {
     User.findOne({ email: req.body.email }).then((foundUser) => {
         if (foundUser) {
             if (foundUser.password === req.body.password) {
+                req.session.email = req.body.email
                 res.redirect("/journals");
-            } else {
-                // res.send("Wrong Password try again!");
-                console.log(foundUser)
             }
         } else {
+            res.send("Wrong Password try again!");
             redirect("/");
         }
 
@@ -84,45 +77,73 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/journals", (req, res) => {
-    res.render("journals");
+    if (req.session.email) {
+        res.render("journals");
+    }
+    else {
+        res.redirect("/");
+    }
 })
 
 
 app.get("/register", (req, res) => {
     res.render("register")
-})
-
-// app.post('/register', function(req, res) {
-//     // User.register(new User({ username : req.body.email , fullname : req.body.fullname }), req.body.password, function(err,user) {
-//     //     if (err) {
-//     //         return res.redirect("/register");
-//     //     }
-//     //     });
-//         passport.authenticate("local")(req,res,()=>{
-//         res.redirect('/journals');
-//     });
-//   });
-
+});
 
 app.post("/register", (req, res) => {
 
-    const user = new User({
-        email: req.body.email,
-        fullname: req.body.fullname,
-        password: req.body.password
-    })
-    user.save();
-    res.redirect("/journals");
+    User.findOne({ email: req.body.email }).then((foundUser) => {
+        if (foundUser) {
+            res.send("An error occured make sure u never created an account")
 
+        } else {
+            const user = new User({
+                email: req.body.email,
+                fullname: req.body.fullname,
+                password: req.body.password
+            })
+            req.session.email = req.body.email
+            user.save()
+            // send email to show user they registered
+            // const transporter = nodemailer.createTransport({
+            //     service: 'gmail',
+            //     auth:{
+            //         user: "tynoemaisyry@gmail.com",
+            //         pass: "truelu123"
+            //     }
+            // });
+
+            // const mailOptions = {
+            //     from: "tynoemaisyry@gmail.com",
+            //     to: req.body.email,
+            //     subect: "Registery conformation",
+            //     text: "Welcome To Campus Journal Lets continue to spread knowledge and enlighten the world!"
+
+            // }
+
+            // transporter.sendMail(mailOptions,(error,info)=>{
+            //     if(error){
+            //         console.log(error);
+            //     }
+            // })
+
+            res.redirect("/journals");
+        }
+    })
+
+})
+app.get("/logout", (req, res) => {
+    req.session.destroy();
+    res.redirect("/")
 })
 
 
 app.get("/articles/:journal", (req, res) => {
 
-    const journal =  _.capitalize(req.params.journal);
+    const journal = _.capitalize(req.params.journal);
 
-    Article.find({Journal : journal}).then((foundArticles) => {
-        res.render("articles", {foundArticles,journalName : journal})
+    Article.find({ Journal: journal }).then((foundArticles) => {
+        res.render("articles", { foundArticles, journalName: journal, user: false })
     })
 
 });
@@ -130,14 +151,19 @@ app.get("/articles/:journal", (req, res) => {
 app.get("/article/:id", (req, res) => {
     const id = req.params.id
 
-    Article.findOne({_id:id}).then((article)=>{
-        res.render("article",{article});
+    Article.findOne({ _id: id }).then((article) => {
+        res.render("article", { article });
     });
 
 });
 
 app.get("/compose-setup", (req, res) => {
-    res.render("compose_setup")
+    if (req.session.email) {
+        res.render("compose_setup");
+    } else {
+        res.redirect("/")
+    }
+
 });
 
 
@@ -146,60 +172,135 @@ app.post("/compose", (req, res) => {
     res.render("compose", { title: req.body.articleName, journal: req.body.journal })
 });
 
-app.post("/comments",(req ,res) =>{
+app.post("/comments", (req, res) => {
 
-    User.findOne({email:"quinton@gmail.com"}).then((foundUser)=>{
-        const comment = new Comment({
-            user : foundUser._id ,
-            comment : req.body.comment,
-            article : req.body.articleID
-        })
-    
-        comment.save();
-        
-    })
+    if (req.session.email) {
 
-    res.send("200");
+        User.findOne({ email: "quinton@gmail.com" }).then((foundUser) => {
+            const comment = new Comment({
+                user: findUserFullName(req.session.email),
+                comment: req.body.comment,
+                article: req.body.articleID
+            })
+
+            comment.save();
+
+        });
+        res.send("200");
+
+    } else {
+        res.redirect("/");
+    }
+
+
+
 
 });
 
-app.get("/comments/:articleID",(req,res)=>{
-    Comment.find({article: req.params.articleID}).then((foundComments)=>{
+app.get("/comments/:articleID", (req, res) => {
+    Comment.find({ article: req.params.articleID }).then((foundComments) => {
         res.send(foundComments);
     })
 })
 
-app.post("/image/:id",(req,res)=>{
+app.post("/image", (req, res) => {
+    console.log(req.body.id);
+    res.render("add_image", { id: req.body.id });
+})
+
+app.post("/image/:id", (req, res) => {
     form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
         const oldpath = files.filetoupload.filepath;
         const newpath = __dirname + "/public/images/" + files.filetoupload.originalFilename;
         fs.rename(oldpath, newpath, function (err) {
-          if (err){
-            res.send("err");
-          }else{
-            Article.findByIdAndUpdate(req.params.id,{image: files.filetoupload.originalFilename }).then((err,docs)=>{
-                if(err){
-                    console.log(err)
-                }else{
-                    res.redirect(`article/${req.params.id}`)
-                }
-            })         
-          }
+            if (err) {
+                res.send("err");
+            } else {
+                Article.findOneAndUpdate({ _id: req.params.id }, { image: files.filetoupload.originalFilename }, { new: true }).then((article) => {
+                    res.redirect("/journals");
+                })
+            }
         })
     })
 });
 
 app.post("/savepost", (req, res) => {
-    const article = new Article({
-        name: _.capitalize(req.body.articleName),
-        content: (req.body.articleContent),
-        Journal: _.capitalize(req.body.journalName),
+
+    if (checkForBadWord(req.body.articleContent)) {
+        res.send({msg: "Article contains unwanted vocabulary please reread and rephrase any bad words "});
+    } else {
+        const article = new Article({
+            author: findUserFullName(req.session.email),
+            name: _.capitalize(req.body.articleName),
+            content: (req.body.articleContent),
+            Journal: _.capitalize(req.body.journalName),
+        })
+        article.save();
+        res.send({ id: article._id })
+    }
+
+})
+
+app.post("/search", (req, res) => {
+    Article.find({ name: { $regex: _.capitalize(req.body.search), $options: "i" } }).then((foundArticles) => {
+        res.render("articles", { foundArticles, journalName: req.body.search, user: false })
     })
-    article.save();
-    res.render("add_image");
 })
 
 app.listen(PORT, () => {
     console.log("Server successfully running on port 3360!")
 });
+
+function findUserFullName(email) {
+    User.findOne({ email: email }).then((foundUser) => {
+        return foundUser.fullname;
+    })
+}
+
+app.get("/myarticles", (req, res) => {
+    if (req.session.email) {
+        const author = findUserFullName(req.session.email);
+
+        Article.find({ author: author }).then((foundArticles) => {
+            res.render("articles", { foundArticles, journalName: "Your Articles", user: true })
+        })
+
+    } else {
+        res.redirect("/")
+    }
+})
+
+app.get("/delete/:id", (req, res) => {
+    Article.deleteOne({ _id: req.params.id }).then((cnt) => {
+        res.redirect("/myarticles")
+    })
+})
+
+app.get("/update/:id", (req, res) => {
+    Article.findOne({ _id: req.params.id }).then((foundArticle) => {
+        res.render("update", { foundArticle: JSON.stringify(foundArticle.content), id: req.params.id })
+    })
+})
+
+app.post("/updatepost", (req, res) => {
+
+    if (checkForBadWord(req.body.articleContent)) {
+        res.send({msg: "Article contains unwanted vocabulary please reread and rephrase any bad words "});
+    } else {
+        Article.findOneAndUpdate({ _id: req.body.articleId }, { content: req.body.articleContent }).then((article) => {
+            res.send("Update Succesful")
+        });
+    }
+
+})
+
+function checkForBadWord(editorData) {
+
+    editorData.blocks.every((block) => {
+        if (badWordChecker.isProfane(block.data.text)) {
+            return true
+        }
+    });
+
+}

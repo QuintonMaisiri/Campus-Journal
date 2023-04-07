@@ -35,3 +35,7 @@
 form >div{
     margin: 20px 0px;
 }
+.password{
+    color: red;
+    display: none;
+}

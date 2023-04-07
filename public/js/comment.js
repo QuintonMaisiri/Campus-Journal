@@ -37,9 +37,11 @@ function loadComments(){
         }
     }).then((response)=>(response.json()))
     .then((articles)=>{
+       if (commentsContainer.hasChildNodes()){
         while (commentsContainer.firstChild) {
             commentsContainer.removeChild(commentsContainer.firstChild);
           }
+       }
         articles.forEach((article=>{
             const commentContainer = document.createElement("div");
             commentContainer.classList.add("comment");

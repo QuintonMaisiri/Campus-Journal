@@ -4,11 +4,20 @@
 <body class="compose-body">
     <h1><%=journal %></h1>
 
-    <div class="compose-container">
+    <div class="compose-container" id="composeContainer">
             <input type="hidden" id = "journalName" name="journal" value="<%=journal %>">
             <input type="hidden" id = "articleName" name="articleName" value="<%=title %>">     
             <div id="editorjs"></div>     
             <button class="btn btn-primary" id = "submit">Submit</button>   
+
+            <div class="addImage" id="addImageContainer">
+                <p>Click Next to add image</p>
+                <form action="/image" method="post">
+                    <button class="btn btn-primary" id="addImageButton" disabled="true"> Next </button>
+                    <input type="hidden" name="id" id="imageId">
+                </form>
+                
+            </div>
     </div>
 
     <script src="/js/editor.js"></script>

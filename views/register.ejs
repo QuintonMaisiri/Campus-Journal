@@ -6,7 +6,7 @@
             <h1 class="login-heading">Welcome To Campus Journal</h1>
             <p class="login-subtext">Enter Your Details To Start Reading And Composing</p>
 
-            <form action="/register" method="post">
+            <form action="/register" method="post" id="registerForm">
 
                 <div class="input-group flex-nowrap">
                     <span class="input-group-text" id="addon-wrapping"><i class="bi bi-person-fill"></i></span>
@@ -22,10 +22,16 @@
 
                 <div class="input-group flex-nowrap">
                     <span class="input-group-text" id="addon-wrapping"><i class="bi bi-key-fill"></i></span>
-                    <input type="password" name ="password" class="form-control" placeholder="Password" aria-label="Password"
+                    <input type="password" name ="password" id ="password" class="form-control" placeholder="Password" aria-label="Password"
                         aria-describedby="addon-wrapping">
                 </div>
-                <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping"><i class="bi bi-key-fill"></i></span>
+                    <input type="password" name ="confirmPassword" id ="confirmPassword" class="form-control" placeholder="Password" aria-label="Password"
+                        aria-describedby="addon-wrapping">
+                </div>
+                <p class="password" id="passwordErr">Passwords dont match</p>
+                <button class="btn btn-primary btn-lg" id="registerBtn" >Register</button>
             </form>
 
             <p class="login-subtext">Join Our university community of writers and readers Contribute to the ever-growing library of knowledge
@@ -33,6 +39,7 @@
         </div>
         <div class="right"><div class="overlay"></div></div>
     </div>
+    <script src="/js/register.js"></script>
 </body>
 
 </html>

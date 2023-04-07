@@ -1,0 +1,19 @@
+<%- include('partials/header'); %>
+<%- include('partials/nav'); %>
+
+<body class="compse-body">
+    <h1>Edit</h1>
+
+    <div class="compose-container" id="composeContainer">
+        <input type="hidden" id = "articleId" name="articleid" value="<%= id %>">
+        <input type="hidden" id = "data" name="data" value="<%= foundArticle %>">     
+        <div id="editorjs"></div>     
+        <button class="btn btn-primary" id = "save">Save</button>                   
+    </div>
+
+    <script src="/js/editor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <script src="/js/editor_controller_update.js"></script>
+
+</body>

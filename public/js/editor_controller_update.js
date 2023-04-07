@@ -1,3 +1,5 @@
+const data = document.getElementById("data").value
+const jsonData = JSON.parse(data)
 const editor = new EditorJS({
     holder: 'editorjs',
 
@@ -18,33 +20,27 @@ const editor = new EditorJS({
             }
         }
     },
+    data: jsonData,
 });
 
-document.getElementById("submit").addEventListener("click",()=>{
-    const journalName = document.getElementById("journalName").value;
-    const articleName = document.getElementById("articleName").value;
+document.getElementById("save").addEventListener("click",()=>{
+
+    const articleId = document.getElementById("articleId").value;
+
     editor.save().then((articleData)=>{
-        fetch("/savepost", {
+        fetch("/updatepost", {
             method: "POST",
             body: JSON.stringify({
                 articleContent : articleData,
-                articleName : articleName,
-                journalName : journalName
+                articleId: articleId
 
             }),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
         })
-        .then((response)=>response.json())
-        .then((res)=>{
-            console.log(res)
-            if (res.id){
-                document.getElementById("submit").style.display ="none"
-                document.getElementById("addImageButton").disabled = false;
-                document.getElementById("imageId").value = res.id;
-                console.log()
-            }
+        .then((response)=>{
+            window.location.href = "/journals"
         })
         
     }).catch((err)=>{

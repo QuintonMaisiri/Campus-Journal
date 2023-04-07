@@ -3,25 +3,38 @@
 
 
 <body id="articles">
-    <h1 class="white"><%= journalName %> </h1>
+    <h1><%= journalName %> </h1>
 
     <div class="articles">
 
         <div class="grid">
+
+            <% if(foundArticles.length === 0){ %>
+                <h1 style="text-align: center;">no articles found</h1>
+            <% } %>
+
             <% foundArticles.forEach((article)=>{ %>
                 <div class="card" style="width: 20rem;">
-                    <img src="/images/science.jpg" class="card-img-top" alt="...">
+                    <% if (article.image){ %>
+                        <img src=<%= `/images/${article.image}`%> class="card-img-top" alt="...">
+                    <% }else{ %>
+                        <img src="/images/science.jpg" class="card-img-top" alt="...">
+                    <% } %>
                     <div class="card-body">
                       <h5 class="card-title"><%= article.name %></h5>
                       <% article.content.blocks.every((block)=>{ %>
                        <% if (block.type === "paragraph"){%>
                             <p class="card-text"><%- block.data.text.substring(0,100) + "..."%></p>
-                           <% return true %>
                        <% }else{ %>
                             <%return false%>
                         <%}%>
                     <%})%>
-                      <a href= <%= "/article/" + article.id %> class="btn btn-primary">Read More</a>
+                      <a href= <%= `/article/${article.id}` %> class="btn btn-primary">Read More</a>
+                      <% if (user){ %>
+                        <a href= <%= `/update/${article.id}` %>  class="btn btn-success" >Update</a>
+                        <a href= <%= `/delete/${article.id}` %>  class="btn btn-danger" >Delete</a>
+                      <% } %>
+                      
                     </div>
                 </div>
             <% } ) %>

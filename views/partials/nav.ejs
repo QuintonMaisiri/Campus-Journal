@@ -10,14 +10,17 @@
                 <a class="nav-link " aria-current="page" href="/journals">Browse</a>
               </li>
               <li class="nav-item">
+                <a class="nav-link " aria-current="page" href="/myarticles">My articles</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="/compose-setup">Compose</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/">Sign-out <i class="bi bi-box-arrow-right"></i></a>
+                <a class="nav-link" href="/logout">Sign-out <i class="bi bi-box-arrow-right"></i></a>
               </li>
             </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2 " type="search" placeholder="Search" aria-label="Search">
+            <form class="d-flex" role="search" method="post" action="/search">
+              <input class="form-control me-2" name="search" type="searchByTitle" placeholder="Search" aria-label="Search">
               <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
           </div>
