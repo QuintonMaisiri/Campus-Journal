@@ -1,7 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const formidable = require("formidable");
@@ -9,6 +7,7 @@ const _ = require("lodash");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 const badWordChecker = require("badwords-js-from-csv");
+require("dotenv").config({ path: __dirname + "/.env" });
 
 const app = express();
 const PORT = 3360;
@@ -41,7 +40,7 @@ const Article = new mongoose.model("article", articleSchema);
 
 
 const userSchema = new mongoose.Schema({
-    email: String,
+    username: String,
     fullname: String,
     password: String
 });
@@ -62,7 +61,7 @@ app.get("/", (req, res) => {
 });
 app.post("/login", (req, res) => {
 
-    User.findOne({ email: req.body.email }).then((foundUser) => {
+    User.findOne({ username: req.body.email }).then((foundUser) => {
         if (foundUser) {
             if (foundUser.password === req.body.password) {
                 req.session.email = req.body.email
@@ -70,7 +69,6 @@ app.post("/login", (req, res) => {
             }
         } else {
             res.send("Wrong Password try again!");
-            redirect("/");
         }
 
     })
@@ -92,13 +90,13 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
 
-    User.findOne({ email: req.body.email }).then((foundUser) => {
+    User.findOne({ username: req.body.email }).then((foundUser) => {
         if (foundUser) {
             res.send("An error occured make sure u never created an account")
 
         } else {
             const user = new User({
-                email: req.body.email,
+                username: req.body.email,
                 fullname: req.body.fullname,
                 password: req.body.password
             })
@@ -109,7 +107,7 @@ app.post("/register", (req, res) => {
             //     service: 'gmail',
             //     auth:{
             //         user: "tynoemaisyry@gmail.com",
-            //         pass: "truelu123"
+            //         pass: "trueluv123"
             //     }
             // });
 
@@ -176,18 +174,20 @@ app.post("/comments", (req, res) => {
 
     if (req.session.email) {
 
-        User.findOne({ email: "quinton@gmail.com" }).then((foundUser) => {
+        (async () => {
+            const user = (await findUserFullName(req.session.email))
+            console.log(user)
             const comment = new Comment({
-                user: findUserFullName(req.session.email),
+                user: user,
                 comment: req.body.comment,
                 article: req.body.articleID
             })
 
             comment.save();
+            res.send("200");
 
-        });
-        res.send("200");
 
+        })()
     } else {
         res.redirect("/");
     }
@@ -204,7 +204,6 @@ app.get("/comments/:articleID", (req, res) => {
 })
 
 app.post("/image", (req, res) => {
-    console.log(req.body.id);
     res.render("add_image", { id: req.body.id });
 })
 
@@ -226,19 +225,26 @@ app.post("/image/:id", (req, res) => {
 });
 
 app.post("/savepost", (req, res) => {
+    const isProfane = checkForBadWord(req.body.articleContent);
 
-    if (checkForBadWord(req.body.articleContent)) {
-        res.send({msg: "Article contains unwanted vocabulary please reread and rephrase any bad words "});
-    } else {
-        const article = new Article({
-            author: findUserFullName(req.session.email),
-            name: _.capitalize(req.body.articleName),
-            content: (req.body.articleContent),
-            Journal: _.capitalize(req.body.journalName),
-        })
-        article.save();
-        res.send({ id: article._id })
-    }
+    (async () => {
+        const author = await findUserFullName(req.session.email)
+
+        if (!isProfane) {
+            const article = new Article({
+                author: author,
+                name: _.capitalize(req.body.articleName),
+                content: (req.body.articleContent),
+                Journal: _.capitalize(req.body.journalName),
+            })
+            article.save();
+            res.send({ id: article._id, isProfane })
+        } else {
+            res.send({ isProfane: isProfane })
+        }
+    })()
+
+
 
 })
 
@@ -248,24 +254,18 @@ app.post("/search", (req, res) => {
     })
 })
 
-app.listen(PORT, () => {
-    console.log("Server successfully running on port 3360!")
-});
-
-function findUserFullName(email) {
-    User.findOne({ email: email }).then((foundUser) => {
-        return foundUser.fullname;
-    })
-}
 
 app.get("/myarticles", (req, res) => {
     if (req.session.email) {
-        const author = findUserFullName(req.session.email);
 
-        Article.find({ author: author }).then((foundArticles) => {
-            res.render("articles", { foundArticles, journalName: "Your Articles", user: true })
-        })
+        (async () => {
+            const author = await findUserFullName(req.session.email);
 
+            Article.find({ author: author }).then((foundArticles) => {
+                res.render("articles", { foundArticles, journalName: "Your Articles", user: true })
+            })
+
+        })()
     } else {
         res.redirect("/")
     }
@@ -285,22 +285,43 @@ app.get("/update/:id", (req, res) => {
 
 app.post("/updatepost", (req, res) => {
 
-    if (checkForBadWord(req.body.articleContent)) {
-        res.send({msg: "Article contains unwanted vocabulary please reread and rephrase any bad words "});
-    } else {
+    const isProfane = checkForBadWord(req.body.articleContent)
+
+    if (!isProfane) {
         Article.findOneAndUpdate({ _id: req.body.articleId }, { content: req.body.articleContent }).then((article) => {
-            res.send("Update Succesful")
+
         });
     }
+    res.send({ isProfane: isProfane });
 
 })
 
-function checkForBadWord(editorData) {
+app.get("/isprofane", (req, res) => {
+    res.render("profane");
+})
 
-    editorData.blocks.every((block) => {
-        if (badWordChecker.isProfane(block.data.text)) {
-            return true
-        }
+function checkForBadWord(editorData) {
+    let result = false
+
+    console.log(badWordChecker.masterCorpusArr)
+    editorData.blocks.forEach((block) => {
+        const words = block.data.text.split(" ")
+        words.forEach((word) => {
+            if (badWordChecker.isProfane(word)) {
+                console.log("is profane");
+                result = true
+            }
+        })
     });
+    return result;
 
 }
+
+const findUserFullName = async (email) => {
+    const response = await User.findOne({ username: email })
+    return response.fullname
+}
+
+app.listen(PORT, () => {
+    console.log("Server successfully running on port 3360!")
+});

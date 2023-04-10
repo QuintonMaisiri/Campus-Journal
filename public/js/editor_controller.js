@@ -38,12 +38,14 @@ document.getElementById("submit").addEventListener("click",()=>{
         })
         .then((response)=>response.json())
         .then((res)=>{
-            console.log(res)
-            if (res.id){
-                document.getElementById("submit").style.display ="none"
-                document.getElementById("addImageButton").disabled = false;
-                document.getElementById("imageId").value = res.id;
-                console.log()
+            if (res.isProfane){
+                alert("There are profane words in this document please remove them")
+            }else{
+                if (res.id){
+                    document.getElementById("submit").style.display ="none"
+                    document.getElementById("addImageButton").disabled = false;
+                    document.getElementById("imageId").value = res.id;
+                }
             }
         })
         

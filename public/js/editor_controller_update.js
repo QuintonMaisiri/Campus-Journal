@@ -39,8 +39,14 @@ document.getElementById("save").addEventListener("click",()=>{
                 "Content-type": "application/json; charset=UTF-8"
             }
         })
-        .then((response)=>{
-            window.location.href = "/journals"
+        .then((response)=>response.json())
+        .then((res)=>{
+            if (res.isProfane){
+                window.location.href = "/isprofane"
+            }else{
+                window.location.href = "/journals"
+            }
+            
         })
         
     }).catch((err)=>{
