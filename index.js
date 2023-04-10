@@ -103,27 +103,27 @@ app.post("/register", (req, res) => {
             req.session.email = req.body.email
             user.save()
             // send email to show user they registered
-            // const transporter = nodemailer.createTransport({
-            //     service: 'gmail',
-            //     auth:{
-            //         user: "tynoemaisyry@gmail.com",
-            //         pass: "trueluv123"
-            //     }
-            // });
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth:{
+                    user: "maisiriquinton@gmail.com",
+                    pass: "only@quin"
+                }
+            });
 
-            // const mailOptions = {
-            //     from: "tynoemaisyry@gmail.com",
-            //     to: req.body.email,
-            //     subect: "Registery conformation",
-            //     text: "Welcome To Campus Journal Lets continue to spread knowledge and enlighten the world!"
+            const mailOptions = {
+                from: "tynoemaisyry@gmail.com",
+                to: req.body.email,
+                subect: "Registery conformation",
+                text: "Welcome To Campus Journal Lets continue to spread knowledge and enlighten the world!"
 
-            // }
+            }
 
-            // transporter.sendMail(mailOptions,(error,info)=>{
-            //     if(error){
-            //         console.log(error);
-            //     }
-            // })
+            transporter.sendMail(mailOptions,(error,info)=>{
+                if(error){
+                    console.log(error);
+                }
+            })
 
             res.redirect("/journals");
         }
@@ -176,7 +176,6 @@ app.post("/comments", (req, res) => {
 
         (async () => {
             const user = (await findUserFullName(req.session.email))
-            console.log(user)
             const comment = new Comment({
                 user: user,
                 comment: req.body.comment,
@@ -302,13 +301,10 @@ app.get("/isprofane", (req, res) => {
 
 function checkForBadWord(editorData) {
     let result = false
-
-    console.log(badWordChecker.masterCorpusArr)
     editorData.blocks.forEach((block) => {
         const words = block.data.text.split(" ")
         words.forEach((word) => {
             if (badWordChecker.isProfane(word)) {
-                console.log("is profane");
                 result = true
             }
         })

@@ -42,7 +42,7 @@ document.getElementById("save").addEventListener("click",()=>{
         .then((response)=>response.json())
         .then((res)=>{
             if (res.isProfane){
-                window.location.href = "/isprofane"
+                alert("This document contains profane words please remove them ")
             }else{
                 window.location.href = "/journals"
             }
