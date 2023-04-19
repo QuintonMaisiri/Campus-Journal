@@ -112,7 +112,7 @@ app.post("/register", (req, res) => {
             });
 
             const mailOptions = {
-                from: "tynoemaisyry@gmail.com",
+                from: "",
                 to: req.body.email,
                 subect: "Registery conformation",
                 text: "Welcome To Campus Journal Lets continue to spread knowledge and enlighten the world!"
